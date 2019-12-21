@@ -9,4 +9,9 @@ class Compatibility
     {
         return version_compare(VersionNumberUtility::getNumericTypo3Version(), 9, '<');
     }
+
+    public static function isVersion10()
+    {
+        return version_compare(VersionNumberUtility::getNumericTypo3Version(), 10, '>=');
+    }
 }

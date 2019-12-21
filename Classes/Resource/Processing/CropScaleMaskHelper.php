@@ -2,8 +2,10 @@
 namespace Lemming\Vips\Resource\Processing;
 
 use Jcupitt\Vips\Image;
+use Lemming\Vips\Service\ConfigurationService;
 use TYPO3\CMS\Core\Resource\Processing\LocalCropScaleMaskHelper;
 use TYPO3\CMS\Core\Resource\Processing\TaskInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 
 class CropScaleMaskHelper extends LocalCropScaleMaskHelper
@@ -16,11 +18,18 @@ class CropScaleMaskHelper extends LocalCropScaleMaskHelper
     public function process(TaskInterface $task)
     {
         $targetFile = $task->getTargetFile();
+        $fileExtensionIsSupported = GeneralUtility::inList(ConfigurationService::getFileExtensions(), $targetFile->getExtension());
+        $this->configuration = $targetFile->getProcessingConfiguration();
+        $isMaskTask = is_array($this->configuration['maskImages']);
+
+        if (!$fileExtensionIsSupported || $isMaskTask) {
+            return parent::process($task);
+        }
+
         $sourceFile = $task->getSourceFile();
         $targetFileName = $this->getFilenameForImageCropScaleMask($task);
         $originalFileName = $sourceFile->getForLocalProcessing(false);
 
-        $this->configuration = $targetFile->getProcessingConfiguration();
         if (empty($this->configuration['fileExtension'])) {
             $this->configuration['fileExtension'] = $task->getTargetFileExtension();
         }

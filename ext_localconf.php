@@ -1,16 +1,9 @@
 <?php
 
 if (extension_loaded('vips')) {
-    if (is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['processors'])) {
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['processors']['vips'] = [
-            'className' => \Lemming\Vips\Resource\Processing\ImageProcessor::class,
-            'before' => ['LocalImageProcessor'],
-        ];
-    } else {
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Resource\Processing\LocalImageProcessor::class] = [
-            'className' => \Lemming\Vips\Resource\Processing\ImageProcessor::class
-        ];
-    }
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Resource\Processing\LocalImageProcessor::class] = [
+        'className' => \Lemming\Vips\Resource\Processing\ImageProcessor::class
+    ];
 
     if (!\Lemming\Vips\Compatibility\Compatibility::isVersion8()) {
         $isComposerMode = \TYPO3\CMS\Core\Core\Environment::isComposerMode();
