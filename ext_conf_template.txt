@@ -1,0 +1,3 @@
+# cat=Vips/; type=string; label=File extensions to process
+fileExtensions = jpg,jpeg,png,webp,pdf
+
