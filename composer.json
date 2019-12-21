@@ -1,0 +1,23 @@
+{
+  "name": "christophlehmann/vips",
+  "type": "typo3-cms-extension",
+  "description": "Faster and less memory hungry thumbnail generation for TYPO3 with vips php module",
+  "license": "GPL-2.0-or-later",
+  "keywords": [
+    "libvips",
+    "imageprocessing",
+    "performance"
+  ],
+  "autoload": {
+    "psr-4": {
+      "Lemming\\Vips\\": "Classes/"
+    }
+  },
+  "replace": {
+    "christophlehmann/vips": "self.version"
+  },
+  "require": {
+    "typo3/cms-core": "^8.7 || ^9.5 || ^10.2",
+    "jcupitt/vips" : "1.0.5"
+  }
+}
