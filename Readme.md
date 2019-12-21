@@ -4,13 +4,15 @@ Faster and less memory hungry thumbnail generation for TYPO3 with [libvips](http
 
 Here is a speed and memory comparison: https://github.com/libvips/libvips/wiki/Speed-and-memory-use
 
-## Installation
-
-`composer require christophlehmann/vips`
+## Prerequisites
 
 The [PHP module vips](https://github.com/libvips/php-vips-ext) needs to be present on the server.
 
 It can be installed with `pecl install vips`
+
+## Installation
+
+`composer require christophlehmann/vips`
 
 ## Configuration
 
