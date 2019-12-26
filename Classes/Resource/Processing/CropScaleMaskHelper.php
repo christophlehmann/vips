@@ -73,8 +73,8 @@ class CropScaleMaskHelper extends LocalCropScaleMaskHelper
 
     protected function thumbnail($image)
     {
-        $width = $this->configuration['width'] ?? $this->configuration['maxWidth'];
-        $height = $this->configuration['height'] ?? $this->configuration['maxHeight'];
+        $width = $this->configuration['width'] ?? $this->configuration['maxWidth'] ?? $image->width;
+        $height = $this->configuration['height'] ?? $this->configuration['maxHeight'] ?? $image->height;
 
         $image = $image->thumbnail_image(
             $width,
