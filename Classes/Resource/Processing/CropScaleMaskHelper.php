@@ -3,6 +3,7 @@ namespace Lemming\Vips\Resource\Processing;
 
 use Jcupitt\Vips\Image;
 use Lemming\Vips\Service\ConfigurationService;
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Resource\Processing\LocalCropScaleMaskHelper;
 use TYPO3\CMS\Core\Resource\Processing\TaskInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -18,41 +19,55 @@ class CropScaleMaskHelper extends LocalCropScaleMaskHelper
     public function process(TaskInterface $task)
     {
         $targetFile = $task->getTargetFile();
-        $fileExtensionIsSupported = GeneralUtility::inList(ConfigurationService::getFileExtensions(), $targetFile->getExtension());
+        $fileExtensionIsSupported = GeneralUtility::inList(ConfigurationService::getFileExtensions(),
+            $targetFile->getExtension());
         $this->configuration = $targetFile->getProcessingConfiguration();
         $isMaskTask = is_array($this->configuration['maskImages']);
 
+        /** @var $logger \TYPO3\CMS\Core\Log\Logger */
+        $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+
         if (!$fileExtensionIsSupported || $isMaskTask) {
+            $logger->info(sprintf('Unsupported: %s Fallback to TYPO3', $task->getSourceFile()->getPublicUrl()),
+                $this->configuration);
             return parent::process($task);
         }
 
-        $sourceFile = $task->getSourceFile();
-        $targetFileName = $this->getFilenameForImageCropScaleMask($task);
-        $originalFileName = $sourceFile->getForLocalProcessing(false);
+        try {
+            $sourceFile = $task->getSourceFile();
+            $targetFileName = $this->getFilenameForImageCropScaleMask($task);
+            $originalFileName = $sourceFile->getForLocalProcessing(false);
 
-        if (empty($this->configuration['fileExtension'])) {
-            $this->configuration['fileExtension'] = $task->getTargetFileExtension();
+            if (empty($this->configuration['fileExtension'])) {
+                $this->configuration['fileExtension'] = $task->getTargetFileExtension();
+            }
+
+            $image = Image::newFromFile($originalFileName);
+            if (!empty($this->configuration['crop'])) {
+                $image = $this->cropImage($image);
+            }
+            $image = $this->thumbnail($image);
+            $quality = MathUtility::forceIntegerInRange($GLOBALS['TYPO3_CONF_VARS']['GFX']['jpg_quality'], 10, 100, 85);
+            $image->writeToFile($targetFileName,
+                [
+                    "Q" => $quality,
+                    "strip" => true
+                ]
+            );
+
+            $logger->info(sprintf('Succesfully processed %s', $originalFileName), $this->configuration);
+
+            $result = [
+                'width' => $image->width,
+                'height' => $image->height,
+                'filePath' => $targetFileName
+            ];
+
+            return $result;
+        } catch (\Throwable $e) {
+            $logger->critical(sprintf('Failed to process %s. Got "%s" in %s:%d', $originalFileName, $e->getMessage(),
+                $e->getFile(), $e->getLine()), $this->configuration);
         }
-
-        $image = Image::newFromFile($originalFileName);
-        if (!empty($this->configuration['crop'])) {
-            $image = $this->cropImage($image);
-        }
-        $image = $this->thumbnail($image);
-        $image->writeToFile($targetFileName,
-            [
-                "Q" => MathUtility::forceIntegerInRange($GLOBALS['TYPO3_CONF_VARS']['GFX']['jpg_quality'], 10, 100, 85),
-                "strip" => true
-            ]
-        );
-
-        $result = [
-            'width' => $image->width,
-            'height' => $image->height,
-            'filePath' => $targetFileName
-        ];
-
-        return $result;
     }
 
     protected function cropImage($image)

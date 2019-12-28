@@ -25,6 +25,22 @@ If you have problems with certain types just deactivate them in EM.
 * [x] Scale images
 * [ ] Mask images (currently done with TYPO3's default image processor)
 
+## Debugging
+
+Add the logging configuration to `typo3conf/AdditionalConfiguration.php`
+
+```php
+$GLOBALS['TYPO3_CONF_VARS']['LOG']['Lemming']['Vips']['writerConfiguration'] = [
+    \TYPO3\CMS\Core\Log\LogLevel::DEBUG => [
+        \TYPO3\CMS\Core\Log\Writer\FileWriter::class => [
+            'logFileInfix' => 'vips'
+        ]
+    ]
+];
+
+```
+Then create a thumbnail and check the log `typo3temp/var/log/typo3_vips_ea8bea6399.log`
+
 ## Contribution
 
 Contributions are very welcome! The extension is managed at [Github](https://github.com/christophlehmann/vips)
