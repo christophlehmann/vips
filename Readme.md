@@ -30,6 +30,7 @@ If you have problems with certain types just deactivate them in EM.
 Add the logging configuration to `typo3conf/AdditionalConfiguration.php`
 
 ```php
+<?php
 $GLOBALS['TYPO3_CONF_VARS']['LOG']['Lemming']['Vips']['writerConfiguration'] = [
     \TYPO3\CMS\Core\Log\LogLevel::DEBUG => [
         \TYPO3\CMS\Core\Log\Writer\FileWriter::class => [
