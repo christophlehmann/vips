@@ -1,9 +1,9 @@
 <?php
 namespace Lemming\Vips\Service;
 
-use Lemming\Vips\Compatibility\Compatibility;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 class ConfigurationService {
 
@@ -12,7 +12,7 @@ class ConfigurationService {
     }
 
     protected static function getExtensionConfigurationKey($key) {
-        if (Compatibility::isVersion8()) {
+        if (version_compare(VersionNumberUtility::getNumericTypo3Version(), 9, '<')) {
             $configuration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['vips']);
         } else {
             $configuration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('vips');

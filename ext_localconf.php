@@ -5,7 +5,7 @@ if (extension_loaded('vips')) {
         'className' => \Lemming\Vips\Resource\Processing\ImageProcessor::class
     ];
 
-    if (!\Lemming\Vips\Compatibility\Compatibility::isVersion8()) {
+    if (!version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getNumericTypo3Version(), 9, '<')) {
         $isComposerMode = \TYPO3\CMS\Core\Core\Environment::isComposerMode();
     } else {
         $isComposerMode = \TYPO3\CMS\Core\Core\Bootstrap::usesComposerClassLoading();
