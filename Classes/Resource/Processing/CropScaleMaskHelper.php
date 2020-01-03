@@ -46,7 +46,8 @@ class CropScaleMaskHelper extends LocalCropScaleMaskHelper
             if (!empty($this->configuration['crop'])) {
                 $image = $this->cropImage($image);
             }
-            $image = $this->thumbnail($image);
+
+            $image = $this->thumbnail($image, $this->configuration['fileExtension']);
             $quality = MathUtility::forceIntegerInRange($GLOBALS['TYPO3_CONF_VARS']['GFX']['jpg_quality'], 10, 100, 85);
             $image->writeToFile($targetFileName,
                 [
@@ -86,13 +87,15 @@ class CropScaleMaskHelper extends LocalCropScaleMaskHelper
         return $image;
     }
 
-    protected function thumbnail($image)
+    protected function thumbnail($image, $suffix)
     {
         $width = $this->configuration['width'] ?? $this->configuration['maxWidth'] ?? $image->width;
         $height = $this->configuration['height'] ?? $this->configuration['maxHeight'] ?? $image->height;
 
-        $image = $image->thumbnail_image(
-            $width,
+        $buffer = $image->writeToBuffer('.' . $this->configuration['fileExtension']);
+        $image = \Jcupitt\Vips\Image::thumbnail_buffer(
+            $buffer,
+            (integer)$width,
             [
                 'height' => $height
             ]
