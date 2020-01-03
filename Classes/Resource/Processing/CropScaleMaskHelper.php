@@ -22,7 +22,7 @@ class CropScaleMaskHelper extends LocalCropScaleMaskHelper
         $fileExtensionIsSupported = GeneralUtility::inList(ConfigurationService::getFileExtensions(),
             $targetFile->getExtension());
         $this->configuration = $targetFile->getProcessingConfiguration();
-        $isMaskTask = is_array($this->configuration['maskImages']);
+        $isMaskTask = isset($this->configuration['maskImages']) && is_array($this->configuration['maskImages']);
 
         /** @var $logger \TYPO3\CMS\Core\Log\Logger */
         $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
