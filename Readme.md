@@ -6,9 +6,11 @@ Here is a speed and memory comparison: https://github.com/libvips/libvips/wiki/S
 
 ## Prerequisites
 
-The [PHP module vips](https://github.com/libvips/php-vips-ext) needs to be present on the server.
+The [PHP module vips](https://github.com/libvips/php-vips-ext) with version 8.8+ needs to be present on the server. The versions 8.5+ may work, but are not tested. 
 
-It can be installed with `pecl install vips`
+@jcupitt provides some [Dockerfiles](https://github.com/jcupitt/docker-builds) which may help you to get a newer version.
+
+The module can be installed with `pecl install vips`
 
 ## Installation
 
@@ -16,8 +18,8 @@ It can be installed with `pecl install vips`
 
 ## Configuration
 
-By default the file types `jpg,jpeg,png,webp,pdf` are handled. Other types are handled through TYPO3.
-If you have problems with certain types just deactivate them in EM.
+By default the file types `jpg,jpeg,png,webp,pdf` are handled. Other types are handled through TYPO3. This list can be
+configured in EM. If you have problems with certain file types just deactivate them.
 
 ## Implemented functionality
 
