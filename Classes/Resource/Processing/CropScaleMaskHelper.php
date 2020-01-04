@@ -3,11 +3,13 @@ namespace Lemming\Vips\Resource\Processing;
 
 use Jcupitt\Vips\Image;
 use Lemming\Vips\Service\ConfigurationService;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Resource\Processing\LocalCropScaleMaskHelper;
 use TYPO3\CMS\Core\Resource\Processing\TaskInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 class CropScaleMaskHelper extends LocalCropScaleMaskHelper
 {
@@ -49,7 +51,8 @@ class CropScaleMaskHelper extends LocalCropScaleMaskHelper
 
             $image = $this->thumbnail($image, $this->configuration['fileExtension']);
             $quality = MathUtility::forceIntegerInRange($GLOBALS['TYPO3_CONF_VARS']['GFX']['jpg_quality'], 10, 100, 85);
-            $image->writeToFile($targetFileName,
+            $temporaryFileName = self::getTemporaryFileName($targetFileName);
+            $image->writeToFile($temporaryFileName,
                 [
                     "Q" => $quality,
                     "strip" => true
@@ -61,7 +64,7 @@ class CropScaleMaskHelper extends LocalCropScaleMaskHelper
             $result = [
                 'width' => $image->width,
                 'height' => $image->height,
-                'filePath' => $targetFileName
+                'filePath' => $temporaryFileName
             ];
 
             return $result;
@@ -102,5 +105,15 @@ class CropScaleMaskHelper extends LocalCropScaleMaskHelper
         );
 
         return $image;
+    }
+
+    public static function getTemporaryFileName($fileName) {
+        if (version_compare(VersionNumberUtility::getNumericTypo3Version(), 9, '<')) {
+            $temporaryFileName = PATH_site . 'typo3temp/' . $fileName;
+        } else {
+            $temporaryFileName = Environment::getPublicPath() . '/typo3temp/' . $fileName;
+        }
+
+        return $temporaryFileName;
     }
 }
