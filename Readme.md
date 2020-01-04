@@ -26,6 +26,8 @@ configured in EM. If you have problems with certain file types just deactivate t
 * [x] Crop images
 * [x] Scale images
 * [ ] Mask images (currently done with TYPO3's default image processor)
+* [ ] Handle upscaling
+* [ ] Handle cropping by parameters like `height=100c`
 
 ## Debugging
 
