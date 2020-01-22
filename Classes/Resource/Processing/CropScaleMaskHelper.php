@@ -55,25 +55,29 @@ class CropScaleMaskHelper extends LocalCropScaleMaskHelper
             $cropArea = $this->getCropArea($configuration);
             if ($cropArea) {
                 $thumbnailFactor = $cropArea[2] / $data[0];
-                $thumbnailWidth = $info[0] / $thumbnailFactor;
-                $thumbnailHeight = $info[1] / $thumbnailFactor;
-                $newCropArea = [
-                    'offsetX' => $cropArea[0] / $thumbnailFactor,
-                    'offsetY' => $cropArea[1] / $thumbnailFactor,
-                    'width' => $data[0],
-                    'height' => $data[1],
-                ];
 
-                $logger->debug('thumbnail croparea ' . $originalFileName, [$thumbnailWidth, $thumbnailHeight]);
-                $image = Image::thumbnail(
-                    $originalFileName,
-                    $thumbnailWidth,
-                    ['height' => $thumbnailHeight]
-                );
+                // Do not upscale
+                if ($thumbnailFactor > 1) {
+                    $thumbnailWidth = $info[0] / $thumbnailFactor;
+                    $thumbnailHeight = $info[1] / $thumbnailFactor;
+                    $cropArea = [
+                        $cropArea[0] / $thumbnailFactor,
+                        $cropArea[1] / $thumbnailFactor,
+                        $data[0],
+                        $data[1],
+                    ];
+                    $logger->debug('thumbnail croparea ' . $originalFileName, [$thumbnailWidth, $thumbnailHeight, $cropArea]);
+                    $image = Image::thumbnail(
+                        $originalFileName,
+                        $thumbnailWidth,
+                        ['height' => $thumbnailHeight]
+                    );
+                } else {
+                    $image = Image::newFromFile($originalFileName);
+                }
 
-                $logger->debug('crop croparea ' . $originalFileName, $newCropArea);
-                $image = $image->crop($newCropArea['offsetX'], $newCropArea['offsetY'], $newCropArea['width'],
-                    $newCropArea['height']);
+                $logger->debug('crop croparea ' . $originalFileName, [$cropArea, $image->width, $image->height]);
+                $image = $image->crop($cropArea[0], $cropArea[1], $cropArea[2], $cropArea[3]);
             } else {
                 $logger->debug('thumbnail ' . $originalFileName, $data);
                 $image = Image::thumbnail(
@@ -89,6 +93,8 @@ class CropScaleMaskHelper extends LocalCropScaleMaskHelper
                     if (!$data['origH']) {
                         $data['origH'] = $data[1];
                     }
+
+                    // Calculate the middle
                     $offsetX = (int)(($data[0] - $data['origW']) * ($data['cropH'] + 100) / 200);
                     $offsetY = (int)(($data[1] - $data['origH']) * ($data['cropV'] + 100) / 200);
 
