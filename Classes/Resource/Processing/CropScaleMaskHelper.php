@@ -58,8 +58,8 @@ class CropScaleMaskHelper extends LocalCropScaleMaskHelper
 
                 // Do not upscale
                 if ($thumbnailFactor > 1) {
-                    $thumbnailWidth = $info[0] / $thumbnailFactor;
-                    $thumbnailHeight = $info[1] / $thumbnailFactor;
+                    $thumbnailWidth = ceil($info[0] / $thumbnailFactor);
+                    $thumbnailHeight = ceil($info[1] / $thumbnailFactor);
                     $cropArea = [
                         $cropArea[0] / $thumbnailFactor,
                         $cropArea[1] / $thumbnailFactor,
